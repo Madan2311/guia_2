@@ -100,6 +100,87 @@ namespace libCnxBD
                 throw;
             }
         }
+
+        public bool vrUnico(bool accion)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(SQL) || string.IsNullOrEmpty(cadCnx))
+                {
+                    Error = "Faltan datos";
+                    return false;
+                }
+                if (!blnHayCnx)
+                    if (!abrirCnx())
+                        return false;
+                objCmd.Connection = objCnx; //Preparar el comando para ejecutar la transacción SQL en la BD
+                objCmd.CommandText = SQL;
+                if (accion)
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                else
+                    objCmd.CommandType= CommandType.Text;
+                vrRpta = objCmd.ExecuteScalar(); //Realizar la transacción a la BD
+                return true;
+            }
+            catch (Exception err)
+            {
+
+                Error = err.Message;
+                return false;
+            }
+        }
+
+        public bool execCmd(bool accion)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(SQL) || string.IsNullOrEmpty(cadCnx))
+                {
+                    Error = "Faltan datos";
+                    return false;
+                }
+                if (!blnHayCnx)
+                    if (!abrirCnx())
+                        return false;
+                objCmd.Connection = objCnx; //Preparar el comando para ejecutar la transacción SQL en la BD
+                objCmd.CommandText = SQL;
+                if (accion)
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                else
+                    objCmd.CommandType = CommandType.Text;
+                objCmd.ExecuteNonQuery(); //Realizar la transacción a la BD
+                return true;
+
+            }
+            catch (Exception err)
+            {
+
+                Error = err.Message;
+                return false;
+            }
+        }
+
+        public bool addParam(ParameterDirection Direc, string Nombre, SqlDbType tipoDato, Int16 Tam, object Vr)
+        {
+            try
+            {
+                objParam.Direction = Direc;
+                objParam.ParameterName = Nombre;
+                objParam.SqlDbType = tipoDato;
+                objParam.Value = Vr;
+                objParam.Size = Tam;
+                objCmd.Parameters.Add(objParam);
+                objParam = new SqlParameter();
+                return true;
+            }
+            catch
+            {
+
+                Error = "Error en ingreso de dato";
+                return false;
+
+            }
+        }
         #endregion
     }
 }
